@@ -12,6 +12,11 @@
             </li>
           </ul>
         </div>
+      <span class="btn-floating btn-large halfway-fab pink">
+        <router-link :to="{ name: 'EditSmoothie', params: {smoothie_slug: smooth.slug} }">
+          <span class="material-icons edit">edit</span>
+        </router-link>
+      </span>
     </div>
 
 

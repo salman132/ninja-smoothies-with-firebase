@@ -9,6 +9,7 @@
       <div v-for="(material, index) in materials" class="text-green" :key="index">
         <label>Ingredient</label>
         <input type="text" name="material" v-model="materials[index]" value="{  material }">
+        <i class="material-icons delete" @click="deleteMaterial(material)">delete</i>
       </div>
       <div class="field add">
         <label>Add Ingredient</label>
@@ -23,7 +24,7 @@
 </template>
 
 <script>
-  import db from '@firebase/init'
+  import db from '@/firebase/init'
   export  default {
       name: 'AddSmoothies',
       data(){
@@ -32,16 +33,27 @@
             another: null,
             feedback:null,
             materials:[],
+            slug: null,
 
         }
       },
       methods:{
           addSmoothie:function () {
             if(this.title){
+              this.feedback = null;
+              db.collection('smoothies').add({
+                  title: this.title,
+                  materials: this.materials,
+                  slug: this.makeSlug(this.title)
+              }).then(()=>{
+                  this.$router.push({name : 'Index'});
 
+              }).catch(error =>{
+                  console.log(error);
+              })
             }
             else{
-                this.feedback = 'Please  '
+                this.feedback = 'Please enter the title'
             }
           },
           adding:function () {
@@ -54,8 +66,19 @@
                   this.feedback = "Please add smoothies";
               }
 
+
+          },
+          deleteMaterial:function(name){
+              this.materials  =this.materials.filter(material =>{
+                  return material != name
+              })
+          },
+          makeSlug:function (text) {
+
+              return text.toLowerCase().replace(/ /g,'-').replace(/[^\w-]+/g,'');
           }
       }
+
   }
 </script>
 
@@ -63,6 +86,11 @@
 <style>
   .add-smoothie{
     max-width: 40%;
+  }
+
+  .delete{
+    cursor: pointer;
+    color: darkred;
   }
 
 
